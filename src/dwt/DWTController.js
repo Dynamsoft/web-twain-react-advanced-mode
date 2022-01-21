@@ -20,7 +20,6 @@ import RangePicker from './RangePicker';
  */
 
  let initialShownTabs = 127;
- let scannerReady = false;
  let cameraReady = false;
  let barcodeReady = false;
  let ocrReady = false;
@@ -134,7 +133,6 @@ export default function DWTController(props){
     // Tab 1: Scanner
     const onSourceChange = (value) => {
         setDeviceSetup({...deviceSetup,currentScanner:value})
-        scannerReady = true;
         if (value === "noscanner") return;
         if (Dynamsoft.Lib.env.bMac) {
             if (value.indexOf("ICA") === 0) {

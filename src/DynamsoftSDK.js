@@ -9,9 +9,6 @@ let DWObject = null;
 let containerId = 'dwtcontrolContainer';
 let width = 583;
 let height = 513;
-let runningEnvironment = Dynamsoft.Lib.env;
-let bWASM = false;
-let bCameraAddonUsable = false;
 
 export default function DWT(props){
 
@@ -75,7 +72,7 @@ export default function DWT(props){
     const loadDWT = (UseService) => {
 		Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
         Dynamsoft.DWT.ResourcesPath = "dwt-resources";
-		Dynamsoft.DWT.ProductKey = 't00996QAAAK0ym5HeVu+gYm1orngpIVakooBvl/u7M5ZPkUBFjrO3XZ0dK9FXXZgPnF+Ev2CxZcNfQ3Sa8IZDGsi36SUX5vmBfSu+MGhpzqhRZOdsehhL4ylMVXYjpl2h8gBTWy6H';
+		Dynamsoft.DWT.ProductKey = 't00881wAAAJiZxwKrauMDAnLQZ4prFe5v+GIzhfe6tY5KYmPHgMl/HdEi/Vt0gw0oYrLdhvNToW0YknBnPyJr0T5IkwNgUinIjHfOHUQH/gYsW0kWed4BaK4rng==';
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(
@@ -169,8 +166,6 @@ export default function DWT(props){
                 if (Dynamsoft.Lib.detect.scriptLoaded) {
                     if (UseService !== undefined)
                         Dynamsoft.DWT.UseLocalService = UseService;
-                    bWASM = runningEnvironment.bMobile || !Dynamsoft.DWT.UseLocalService;
-                    bCameraAddonUsable = !bWASM && runningEnvironment.bWin;
                     modulizeInstallJS();
                     let dwtInitialConfig = {
                         WebTwainId: "dwtObject"
