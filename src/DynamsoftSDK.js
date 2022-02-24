@@ -72,7 +72,7 @@ export default function DWT(props){
     const loadDWT = (UseService) => {
 		Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
         Dynamsoft.DWT.ResourcesPath = "dwt-resources";
-		Dynamsoft.DWT.ProductKey = 't00881wAAAJiZxwKrauMDAnLQZ4prFe5v+GIzhfe6tY5KYmPHgMl/HdEi/Vt0gw0oYrLdhvNToW0YknBnPyJr0T5IkwNgUinIjHfOHUQH/gYsW0kWed4BaK4rng==';
+		Dynamsoft.DWT.ProductKey = 't00901wAAAFGokK55GCTHFf8RWZ8bKjNRD1O+Gf0xA6MUdkmYI6zSueLnBjy55bNxl/YW1HkZykS/h0xYHBuFFwIDbexR567425Cx3hnuwAewN5DyXtRd/ATLnyy+';
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(
@@ -162,29 +162,21 @@ export default function DWT(props){
 
     const innerLoadDWT = (UseService) => {
         return new Promise((res, rej) => {
-            let checkScriptLoaded = () => {
-                if (Dynamsoft.Lib.detect.scriptLoaded) {
-                    if (UseService !== undefined)
-                        Dynamsoft.DWT.UseLocalService = UseService;
-                    modulizeInstallJS();
-                    let dwtInitialConfig = {
-                        WebTwainId: "dwtObject"
-                    };
-                    Dynamsoft.DWT.CreateDWTObjectEx(
-                        dwtInitialConfig,
-                        (_DWObject) => {
-                            res(_DWObject);
-                        },
-                        (errorString) => {
-                            rej(errorString)
-                        }
-                    );
-                } else
-                    setTimeout(() => {
-                        checkScriptLoaded();
-                    }, 1000);
-            }
-            checkScriptLoaded();
+			if (UseService !== undefined)
+				Dynamsoft.DWT.UseLocalService = UseService;
+			modulizeInstallJS();
+			let dwtInitialConfig = {
+				WebTwainId: "dwtObject"
+			};
+			Dynamsoft.DWT.CreateDWTObjectEx(
+				dwtInitialConfig,
+				(_DWObject) => {
+					res(_DWObject);
+				},
+				(errorString) => {
+					rej(errorString)
+				}
+			);
         });
     }
     const go = (index) => {
