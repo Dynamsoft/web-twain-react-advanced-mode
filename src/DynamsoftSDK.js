@@ -70,7 +70,7 @@ export default function DWT(props){
     const loadDWT = (UseService) => {
 		Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
         Dynamsoft.DWT.ResourcesPath = "/dwt-resources";
-		Dynamsoft.DWT.ProductKey = 't00891wAAAEbOWXicCg/1bwa29gTMj4S89ctUTkXBm+c5T4rfmfK+D7o7BxNdhMwAQhsRyqJ3AZfqg+fUDZ+dlQ7IHcOPlAHfBcF6F7iDMkC8gaSmKpbjBOJTLOo=';
+		Dynamsoft.DWT.ProductKey = 't01016QAAAGIdcCnJCjfCysrtDAX0dENHJelpuO0eKLLj4bAV0ywIQPGA7bBHZ1U49XmtJLtLoWuJNMWeTlx2RVqTGnAIntCuDQ4uY+MPVZbmHDHWjz85vXwaTsNkU5oC88M13Y+8Lus=';
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(

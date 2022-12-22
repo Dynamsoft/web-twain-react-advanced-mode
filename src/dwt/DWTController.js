@@ -73,6 +73,7 @@ export default function DWTController(props){
     const [bMulti, setBMulti] = useState(false);
     const [readingBarcode, setReadingBarcode] = useState(false);
     const [ocring] = useState(false)
+    const [bWin] = useState(Dynamsoft.navInfo.bWin)
 
     const handleTabs = (event) => {
         if (event.keyCode && event.keyCode !== 32) return;
@@ -92,13 +93,16 @@ export default function DWTController(props){
         DWObject = props.dwt;
         if (DWObject) {
             if (props.features & 0b1) {
-                let vCount = DWObject.SourceCount;
-                let sourceNames = [];
-                for (let i = 0; i < vCount; i++)
-                    sourceNames.push(DWObject.GetSourceNameItems(i));
-                setScanners(sourceNames)
-                if (sourceNames.length > 0)
-                    onSourceChange(sourceNames[0]);
+                DWObject.GetDevicesAsync().then((devices)=>{
+                    let sourceNames = [];
+                    for (var i = 0; i < devices.length; i++) { // Get how many sources are installed in the system
+                        sourceNames.push(devices[i].displayName);
+                    }
+                    setScanners(sourceNames);
+                    if (sourceNames.length > 0) onSourceChange(sourceNames[0]);
+                }).catch(function (exp) {
+                    alert(exp.message);
+                });
             }
             if (props.features & 0b10) {
                 let cameraNames = DWObject.Addon.Webcam.GetSourceList();
@@ -178,16 +182,16 @@ export default function DWTController(props){
         })
     }
     const acquireImage = () => {
-        DWObject.CloseSource();
-        for (let i = 0; i < DWObject.SourceCount; i++) {
-            if (DWObject.GetSourceNameItems(i) === deviceSetup.currentScanner) {
-                DWObject.SelectSourceByIndex(i);
-                break;
+        DWObject.GetDevicesAsync().then((devices) => {
+            for (var i = 0; i < devices.length; i++) { // Get how many sources are installed in the system
+                if (devices[i].displayName === deviceSetup.currentScanner) {
+                    return devices[i];
+                }
             }
-        }
-        DWObject.OpenSource();
-        DWObject.AcquireImage(
-            {
+        }).then((device) => {
+            return DWObject.SelectDeviceAsync(device);
+        }).then(() => {
+            return DWObject.AcquireImageAsync({
                 IfShowUI: deviceSetup.bShowUI,
                 PixelType: deviceSetup.nPixelType,
                 Resolution: deviceSetup.nResolution,
@@ -200,10 +204,12 @@ export default function DWTController(props){
                 /**
                  * NOTE: No errors are being logged!!
                  */
-            },
-            () => props.handleOutPutMessage("Acquire success!", "important"),
-            () => props.handleOutPutMessage("Acquire failure!", "error")
-        );
+            });
+        }).then(()=>{
+            props.handleOutPutMessage("Acquire success!", "important")
+        }).catch(function (exp) {
+            props.handleOutPutMessage("Acquire failure!", "error")
+        });
     }
     // Tab 2: Camera    
     const onCameraChange = (value) => {
@@ -770,7 +776,7 @@ export default function DWTController(props){
                             </div>
                         </li>
                     ) : ""}
-                    {props.features & 0b10 ? (
+                    {bWin && (props.features & 0b10) ? (
                         <li>
                             <div className="divType" tabIndex="2" controlindex="2" onClick={(event) => handleTabs(event)} onKeyUp={(event) => handleTabs(event)}>
                                 <div className={shownTabs & 2 ? "mark_arrow expanded" : "mark_arrow collapsed"} ></div>
@@ -863,7 +869,7 @@ export default function DWTController(props){
                             <div className="divTableStyle" style={shownTabs & 16 ? { display: "block" } : { display: "none" }}>
                                 <ul>
                                     <li className="tc">
-                                        {(props.features & 0b100000) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p" : "majorButton enabled width_48p"} disabled={props.buffer.count === 0 || readingBarcode ? "disabled" : ""} onClick={() => readBarcode()} >{readingBarcode ? "Reading..." : "Read Barcode"}</button> : ""}
+                                        {(bWin && (props.features & 0b100000)) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p" : "majorButton enabled width_48p"} disabled={props.buffer.count === 0 || readingBarcode ? "disabled" : ""} onClick={() => readBarcode()} >{readingBarcode ? "Reading..." : "Read Barcode"}</button> : ""}
                                         {(props.features & 0b1000000) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p marginL_2p" : "majorButton enabled width_48p marginL_2p"} disabled={props.buffer.count === 0 || ocring ? "disabled" : ""} onClick={() => ocr()}>{ocring ? "Ocring..." : "OCR (English)"}</button> : ""}
                                     </li>
                                     {props.barcodeRects.length > 0 &&
