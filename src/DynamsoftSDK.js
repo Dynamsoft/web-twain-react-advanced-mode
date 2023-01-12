@@ -96,6 +96,11 @@ export default function DWT(props){
 								});
                                 DWObject.RegisterEvent("OnPostTransfer", () => handleBufferChange());
                                 DWObject.RegisterEvent("OnPostLoad", () => handleBufferChange());
+								DWObject.RegisterEvent("OnBufferChanged", (e) => {
+                                    if(e.action === 'shift' && e.currentId !==  -1){
+                                      handleBufferChange()
+                                    }
+                                });
                                 DWObject.RegisterEvent("OnPostAllTransfers", () => DWObject.CloseSource());
                                 DWObject.Viewer.on('pageAreaSelected', (nImageIndex, rect) => {
                                     if (rect.length > 0) {
