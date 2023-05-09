@@ -516,6 +516,7 @@ export default function DWTController(props){
                 else
                     settings.scaleDownThreshold = 2300;
                 settings.barcodeFormatIds = Dynamsoft.DBR.EnumBarcodeFormat.BF_ALL;
+                settings.barcodeFormatIds_2 = Dynamsoft.DBR.EnumBarcodeFormat_2.BF2_DOTCODE + Dynamsoft.DBR.EnumBarcodeFormat_2.BF2_POSTALCODE;
                 settings.region.measuredByPercentage = 0;
                 if (props.zones.length > 0) {
                     let i = 0;

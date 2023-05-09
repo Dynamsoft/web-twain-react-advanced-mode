@@ -33,7 +33,7 @@ export default function DWTUserInterface(props){
                 text = text.join(" & ");
             text += "ready...";
         }
-        if (_status === 255) {
+        if (_status === props.features) {
             if (_statusChange)
                 text = "_ALLDONE_" + text;
             else

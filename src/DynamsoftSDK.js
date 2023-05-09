@@ -70,7 +70,7 @@ export default function DWT(props){
     const loadDWT = (UseService) => {
 		Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
         Dynamsoft.DWT.ResourcesPath = "/dwt-resources";
-		Dynamsoft.DWT.ProductKey = 't00901wAAACy5sL0CithUvqG09Q3fX0qr6fVQmMBRMN6BlhLLXan8mKGeCb/c8Me5e+6GSuLobuK6zIq4SENjkxye/DjM4zDl74JezQ0KpoUBygqIJS2+M3cKFS1W';
+		Dynamsoft.DWT.ProductKey = 't0100CgEAAI/Kalkph+rANa7xvFeYzy2ZJaF0sV188r8K/knF/akFHHvAHdHAtGHQJrpxP+nqlDJkXOD65sKMbWhdmp6b7QgCWLr5A0huNQqu+DW0v3gAgcFwAvEGSBQj0nwHo981mg==';
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(
@@ -96,11 +96,6 @@ export default function DWT(props){
 								});
                                 DWObject.RegisterEvent("OnPostTransfer", () => handleBufferChange());
                                 DWObject.RegisterEvent("OnPostLoad", () => handleBufferChange());
-								DWObject.RegisterEvent("OnBufferChanged", (e) => {
-                                    if(e.action === 'shift' && e.currentId !==  -1){
-                                      handleBufferChange()
-                                    }
-                                });
                                 DWObject.RegisterEvent("OnPostAllTransfers", () => DWObject.CloseSource());
                                 DWObject.Viewer.on('pageAreaSelected', (nImageIndex, rect) => {
                                     if (rect.length > 0) {
@@ -140,13 +135,14 @@ export default function DWT(props){
     useEffect(() => {
 		Dynamsoft.Ready(function(){
 			if (!Dynamsoft.Lib.env.bWin || !Dynamsoft.Lib.product.bChromeEdition) {
-                setUnSupportedEnv(true)
-				return;
-			} else {
-				if (DWObject === null){
-                    loadDWT(true)
-                }
-			}
+                featureSet = { scan: 0b1, load: 0b100, save: 0b1000, upload: 0b10000, barcode: 0b100000, uploader: 0b10000000 };
+                features = 0b10111101;
+                initialStatus = 0;
+                // setUnSupportedEnv(true)
+				// return;
+			} 
+            
+			if (DWObject === null) loadDWT(true)
 		});
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
     
