@@ -7,7 +7,7 @@ let features = 0b11111111;
 let initialStatus = 0;
 let DWObject = null;
 let containerId = 'dwtcontrolContainer';
-let width = 583;
+let width = 585;
 let height = 513;
 
 export default function DWT(props){
@@ -70,7 +70,7 @@ export default function DWT(props){
     const loadDWT = (UseService) => {
 		Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
         Dynamsoft.DWT.ResourcesPath = "/dwt-resources";
-		Dynamsoft.DWT.ProductKey = 't0100CgEAAI/Kalkph+rANa7xvFeYzy2ZJaF0sV188r8K/knF/akFHHvAHdHAtGHQJrpxP+nqlDJkXOD65sKMbWhdmp6b7QgCWLr5A0huNQqu+DW0v3gAgcFwAvEGSBQj0nwHo981mg==';
+		Dynamsoft.DWT.ProductKey = 't0106KwEAAHS5i/IQMtobY1KiE0ohnvp0rYQ6Odqe3YSTuwoeLvNCke4y7UccAqchMe1OUgSW/vPP42qfMZqjyorwWR/DnRUBbMP5AyjcPbyr+HVod/EEDJNDB2wFSOh/Xnlxg6lISUkO19Q75w==';
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(
@@ -151,8 +151,8 @@ export default function DWT(props){
         if (buffer.count > 0) {
             setRuntimeInfo({
                 curImageTimeStamp: (new Date()).getTime(),
-                showAbleWidth: DWObject.HowManyImagesInBuffer > 1 ? width - 16 : width,
-                showAbleHeight: height,
+                showAbleWidth: (DWObject.HowManyImagesInBuffer > 1 ? width - 12 : width) - 4,
+                showAbleHeight: height - 4,
                 ImageWidth: DWObject.GetImageWidth(buffer.current),
                 ImageHeight: DWObject.GetImageHeight(buffer.current)
             })

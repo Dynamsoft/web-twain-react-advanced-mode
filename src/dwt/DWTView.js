@@ -16,7 +16,7 @@ import './DWTView.css';
 
  const re = /^\d+$/;
  let DWObject = null;
- let width = "583px"
+ let width = "585px"
  let height = "513px";
  let navigatorRight = "60px";
  let navigatorWidth = "585px";

@@ -96,7 +96,7 @@ export default function DWTUserInterface(props){
                     let right = Math.max(loc.x1, loc.x2, loc.x3, loc.x4);
                     let bottom = Math.max(loc.y1, loc.y2, loc.y3, loc.y4);
                     let leftBase = 1 + props.runtimeInfo.showAbleWidth / 2 - props.runtimeInfo.ImageWidth / 2 * zoom;
-                    let topBase = 1 + props.runtimeInfo.showAbleHeight / 2 - props.runtimeInfo.ImageHeight / 2 * zoom;
+                    let topBase = 2 + props.runtimeInfo.showAbleHeight / 2 - props.runtimeInfo.ImageHeight / 2 * zoom;
                     let width = (right - left) * zoom;
                     let height = (bottom - top) * zoom;
                     left = leftBase + left * zoom;
