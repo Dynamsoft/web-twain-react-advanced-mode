@@ -374,8 +374,12 @@ export default function DWTController(props){
     // Tab 3: Load
     const loadImagesOrPDFs = () => {
         DWObject.IfShowFileDialog = true;
-        DWObject.Addon.PDF.SetResolution(200);
-        DWObject.Addon.PDF.SetConvertMode(1/*this.Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL*/);
+        DWObject.Addon.PDF.SetReaderOptions({
+            convertMode: Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL,
+            renderOptions: {
+                resolution: 200
+            }
+        });
         DWObject.LoadImageEx("", 5 /*this.Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL*/, () => {
             props.handleOutPutMessage("Loaded an image successfully.");
         }, (errorCode, errorString) => props.handleException({ code: errorCode, message: errorString }));
