@@ -24,7 +24,6 @@ function App() {
             "save",
             "upload",
             "barcode",
-            "ocr",
             "uploader"
           ]}
         />
