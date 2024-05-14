@@ -201,7 +201,7 @@ export default function DWTView(props){
                         </ul>
                     </div>
                 </div>
-                <div style={{ position: "relative", float: "left", width: width, height: height }} id={props.containerId}>
+                <div style={{ position: "relative", float: "left", width: "500px", height: height }} id={props.containerId}>
                     {props.barcodeRects.map((_rect, _index) => (
                         <div key={_index} className="barcodeInfoRect" style={{ left: _rect.x + "px", top: _rect.y + "px", width: _rect.w + "px", height: _rect.h + "px" }} >
                             <div className="spanContainer"><span>[{_index + 1}]</span>

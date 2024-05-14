@@ -87,7 +87,8 @@ export default function DWT(props){
 							DWObject.Viewer.width = width;
 							DWObject.Viewer.height = height;
                             DWObject.Viewer.setViewMode(1, 1);
-							DWObject.Viewer.show();
+                            DWObject.Viewer.autoChangeIndex = true;
+                            DWObject.Viewer.show();
                             handleStatusChange(1);
                             setDwt(DWObject)
                             // DWObject = dwt
@@ -103,6 +104,11 @@ export default function DWT(props){
 								});
                                 DWObject.RegisterEvent("OnPostTransfer", () => handleBufferChange());
                                 DWObject.RegisterEvent("OnPostLoad", () => handleBufferChange());
+                                DWObject.RegisterEvent("OnBufferChanged", (e) => {
+                                    if(e.action === 'shift' && e.currentId !==  -1){
+                                        handleBufferChange()
+                                    }
+                                });
                                 DWObject.RegisterEvent("OnPostAllTransfers", () => DWObject.CloseSource());
                                 DWObject.Viewer.on('pageAreaSelected', (nImageIndex, rect) => {
                                     if (rect.length > 0) {
@@ -207,8 +213,8 @@ export default function DWT(props){
         setStatus(status => { return status + value})
     }
     const handleViewerSizeChange = (viewSize) => {
-        width = viewSize.width;
-        height = viewSize.height;
+        //width = viewSize.width;
+        //height = viewSize.height;
     }
     
     return(
