@@ -24,7 +24,7 @@ import RangePicker from './RangePicker';
  let barcodeReady = false;
  let fileUploaderReady = false;
  let Dynamsoft = null;
- let DWObject = null;
+ let DWTObject = null;
 //  let dbrObject = null;
  let fileUploaderManager = null;
  let dbrResults = [];
@@ -88,10 +88,10 @@ export default function DWTController(props){
         }
     }
     useEffect(() => {
-        DWObject = props.dwt;
-        if (DWObject) {
+        DWTObject = props.dwt;
+        if (DWTObject) {
             if (props.features & 0b1) {
-                DWObject.GetDevicesAsync().then((devices)=>{
+                DWTObject.GetDevicesAsync().then((devices)=>{
                     let sourceNames = [];
                     for (var i = 0; i < devices.length; i++) { // Get how many sources are installed in the system
                         sourceNames.push(devices[i].displayName);
@@ -103,7 +103,7 @@ export default function DWTController(props){
                 });
             }
             if (props.features & 0b10) {
-                let cameraNames = DWObject.Addon.Webcam.GetSourceList();
+                let cameraNames = DWTObject.Addon.Webcam.GetSourceList();
                 setCameras(cameraNames)
                 if (cameraNames.length > 0)
                     onCameraChange(cameraNames[0]);
@@ -177,16 +177,16 @@ export default function DWTController(props){
         })
     }
     const acquireImage = () => {
-        DWObject.GetDevicesAsync().then((devices) => {
+        DWTObject.GetDevicesAsync().then((devices) => {
             for (var i = 0; i < devices.length; i++) { // Get how many sources are installed in the system
                 if (devices[i].displayName === deviceSetup.currentScanner) {
                     return devices[i];
                 }
             }
         }).then((device) => {
-            return DWObject.SelectDeviceAsync(device);
+            return DWTObject.SelectDeviceAsync(device);
         }).then(() => {
-            return DWObject.AcquireImageAsync({
+            return DWTObject.AcquireImageAsync({
                 IfShowUI: deviceSetup.bShowUI,
                 PixelType: deviceSetup.nPixelType,
                 Resolution: deviceSetup.nResolution,
@@ -220,15 +220,15 @@ export default function DWTController(props){
             }
             return;
         }
-        DWObject.Addon.Webcam.StopVideo();
-        if (DWObject.Addon.Webcam.SelectSource(value)) {
-            let mediaTypes = DWObject.Addon.Webcam.GetMediaType(),
+        DWTObject.Addon.Webcam.StopVideo();
+        if (DWTObject.Addon.Webcam.SelectSource(value)) {
+            let mediaTypes = DWTObject.Addon.Webcam.GetMediaType(),
                 _mediaTypes = [],
                 _currentmT = mediaTypes.GetCurrent();
-            let frameRates = DWObject.Addon.Webcam.GetFrameRate(),
+            let frameRates = DWTObject.Addon.Webcam.GetFrameRate(),
                 _frameRates = [],
                 _currentfR = frameRates.GetCurrent();
-            let resolutions = DWObject.Addon.Webcam.GetResolution(),
+            let resolutions = DWTObject.Addon.Webcam.GetResolution(),
                 _resolutions = [],
                 _currentRes = resolutions.GetCurrent();
             let _advancedSettings = [],
@@ -293,7 +293,7 @@ export default function DWTController(props){
         }
     }
     const toggleCameraVideo = (bShow) => {
-        if (DWObject) {
+        if (DWTObject) {
             if (bShow) {
                 playVideo();
                 setDeviceSetup(deviceSetup => {
@@ -302,7 +302,7 @@ export default function DWTController(props){
                     return newDeviceSetup
                 })
             } else {
-                DWObject.Addon.Webcam.StopVideo();
+                DWTObject.Addon.Webcam.StopVideo();
                 setDeviceSetup(deviceSetup => {
                     let newDeviceSetup = {...deviceSetup};
                     newDeviceSetup.isVideoOn = false;
@@ -318,11 +318,11 @@ export default function DWTController(props){
                 let bCamera = true;
                 if (config.prop === "Video Setup") {
                     bCamera = false;
-                    basicSetting = DWObject.Addon.Webcam.GetVideoPropertySetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + config.value]);
-                    moreSetting = DWObject.Addon.Webcam.GetVideoPropertyMoreSetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + config.value]);
+                    basicSetting = DWTObject.Addon.Webcam.GetVideoPropertySetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + config.value]);
+                    moreSetting = DWTObject.Addon.Webcam.GetVideoPropertyMoreSetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + config.value]);
                 } else {
-                    basicSetting = DWObject.Addon.Webcam.GetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + config.value]);
-                    moreSetting = DWObject.Addon.Webcam.GetCameraControlPropertyMoreSetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + config.value]);
+                    basicSetting = DWTObject.Addon.Webcam.GetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + config.value]);
+                    moreSetting = DWTObject.Addon.Webcam.GetCameraControlPropertyMoreSetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + config.value]);
                 }
                 let value = basicSetting.GetValue(),
                     min = moreSetting.GetMinValue(),
@@ -345,11 +345,11 @@ export default function DWTController(props){
                 });
                 return;
             } else {
-                //this.DWObject.Addon.Webcam.StopVideo();
+                //this.DWTObject.Addon.Webcam.StopVideo();
                 switch (config.prop) {
-                    case "Frame Rate": DWObject.Addon.Webcam.SetFrameRate(config.value); break;
-                    case "Media Type": DWObject.Addon.Webcam.SetMediaType(config.value); break;
-                    case "Resolution": DWObject.Addon.Webcam.SetResolution(config.value); break;
+                    case "Frame Rate": DWTObject.Addon.Webcam.SetFrameRate(config.value); break;
+                    case "Media Type": DWTObject.Addon.Webcam.SetMediaType(config.value); break;
+                    case "Resolution": DWTObject.Addon.Webcam.SetResolution(config.value); break;
                     default: break;
                 }
             }
@@ -358,24 +358,24 @@ export default function DWTController(props){
          * NOTE: The video playing is not smooth, there is a zoom-out effect (unwanted)
          */
         if ((config && deviceSetup.isVideoOn) || !config)
-            DWObject.Addon.Webcam.PlayVideo(DWObject, 80, () => { });
+            DWTObject.Addon.Webcam.PlayVideo(DWTObject, 80, () => { });
     }
     const captureImage = () => {
-        if (DWObject) {
+        if (DWTObject) {
             let funCaptureImage = () => setTimeout(() => { toggleCameraVideo(false); }, 50);
-            DWObject.Addon.Webcam.CaptureImage(funCaptureImage, funCaptureImage);
+            DWTObject.Addon.Webcam.CaptureImage(funCaptureImage, funCaptureImage);
         }
     }
     // Tab 3: Load
     const loadImagesOrPDFs = () => {
-        DWObject.IfShowFileDialog = true;
-        DWObject.Addon.PDF.SetReaderOptions({
+        DWTObject.IfShowFileDialog = true;
+        DWTObject.Addon.PDF.SetReaderOptions({
             convertMode: Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL,
             renderOptions: {
                 resolution: 200
             }
         });
-        DWObject.LoadImageEx("", 5 /*this.Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL*/, () => {
+        DWTObject.LoadImageEx("", 5 /*this.Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL*/, () => {
             props.handleOutPutMessage("Loaded an image successfully.");
         }, (errorCode, errorString) => props.handleException({ code: errorCode, message: errorString }));
     }
@@ -424,8 +424,8 @@ export default function DWTController(props){
                 if (_type === "local") {
                     switch (saveFileFormat) {
                         default: break;
-                        case "tif": DWObject.SaveAllAsMultiPageTIFF(fileName, onSuccess, onFailure); break;
-                        case "pdf": DWObject.SaveAllAsPDF(fileName, onSuccess, onFailure); break;
+                        case "tif": DWTObject.SaveAllAsMultiPageTIFF(fileName, onSuccess, onFailure); break;
+                        case "pdf": DWTObject.SaveAllAsPDF(fileName, onSuccess, onFailure); break;
                     }
                 }
                 else {
@@ -436,8 +436,8 @@ export default function DWTController(props){
                 if (_type === "local") {
                     switch (saveFileFormat) {
                         default: break;
-                        case "tif": DWObject.SaveSelectedImagesAsMultiPageTIFF(fileName, onSuccess, onFailure); break;
-                        case "pdf": DWObject.SaveSelectedImagesAsMultiPagePDF(fileName, onSuccess, onFailure); break;
+                        case "tif": DWTObject.SaveSelectedImagesAsMultiPageTIFF(fileName, onSuccess, onFailure); break;
+                        case "pdf": DWTObject.SaveSelectedImagesAsMultiPagePDF(fileName, onSuccess, onFailure); break;
                     }
                 }
                 else {
@@ -448,11 +448,11 @@ export default function DWTController(props){
             if (_type === "local") {
                 switch (saveFileFormat) {
                     default: break;
-                    case "bmp": DWObject.SaveAsBMP(fileName, props.buffer.current, onSuccess, onFailure); break;
-                    case "jpg": DWObject.SaveAsJPEG(fileName, props.buffer.current, onSuccess, onFailure); break;
-                    case "tif": DWObject.SaveAsTIFF(fileName, props.buffer.current, onSuccess, onFailure); break;
-                    case "png": DWObject.SaveAsPNG(fileName, props.buffer.current, onSuccess, onFailure); break;
-                    case "pdf": DWObject.SaveAsPDF(fileName, props.buffer.current, onSuccess, onFailure); break;
+                    case "bmp": DWTObject.SaveAsBMP(fileName, props.buffer.current, onSuccess, onFailure); break;
+                    case "jpg": DWTObject.SaveAsJPEG(fileName, props.buffer.current, onSuccess, onFailure); break;
+                    case "tif": DWTObject.SaveAsTIFF(fileName, props.buffer.current, onSuccess, onFailure); break;
+                    case "png": DWTObject.SaveAsPNG(fileName, props.buffer.current, onSuccess, onFailure); break;
+                    case "pdf": DWTObject.SaveAsPDF(fileName, props.buffer.current, onSuccess, onFailure); break;
                 }
             }
             else {
@@ -479,7 +479,7 @@ export default function DWTController(props){
                 job.ServerUrl = serverUrl;
                 job.FileName = fileName;
                 job.ImageType = fileType;
-                DWObject.GenerateURLForUploadData(imagesToUpload, fileType, (resultURL, newIndices, enumImageType) => {
+                DWTObject.GenerateURLForUploadData(imagesToUpload, fileType, (resultURL, newIndices, enumImageType) => {
                     job.SourceValue.Add(resultURL, fileName);
                     job.OnUploadTransferPercentage = (job, sPercentage) => {
                         props.handleOutPutMessage("Uploading...(" + sPercentage + "%)");
@@ -491,12 +491,12 @@ export default function DWTController(props){
                     props.handleException({ code: errorCode, message: errorString });
                 });
             } else
-                DWObject.HTTPUpload(serverUrl, imagesToUpload, fileType, Dynamsoft.DWT.EnumDWT_UploadDataFormat.Binary, fileName, onSuccess, onFailure);
+                DWTObject.HTTPUpload(serverUrl, imagesToUpload, fileType, Dynamsoft.DWT.EnumDWT_UploadDataFormat.Binary, fileName, onSuccess, onFailure);
         }
     }
     // Tab 5: read Barcode
     const initBarcodeReader = (_features) => {
-        DWObject.Addon.BarcodeReader.getRuntimeSettings()
+        DWTObject.Addon.BarcodeReader.getRuntimeSettings()
             .then(settings => {
                 if (!barcodeReady) {
                     barcodeReady = true;
@@ -508,9 +508,9 @@ export default function DWTController(props){
         Dynamsoft.Lib.showMask();
         setReadingBarcode(true);
         props.handleNavigating(false);
-        DWObject.Addon.BarcodeReader.getRuntimeSettings()
+        DWTObject.Addon.BarcodeReader.getRuntimeSettings()
             .then(settings => {
-                if (DWObject.GetImageBitDepth(props.buffer.current) === 1)
+                if (DWTObject.GetImageBitDepth(props.buffer.current) === 1)
                     settings.scaleDownThreshold = 214748347;
                 else
                     settings.scaleDownThreshold = 2300;
@@ -550,7 +550,7 @@ export default function DWTController(props){
     }
     const doReadBarode = (settings, callback) => {
         let bHasCallback = Dynamsoft.Lib.isFunction(callback);
-        DWObject.Addon.BarcodeReader.updateRuntimeSettings(settings)
+        DWTObject.Addon.BarcodeReader.updateRuntimeSettings(settings)
             .then(settings => {
                 // Make sure the same image is on display
                 let userData = props.runtimeInfo.curImageTimeStamp;
@@ -587,7 +587,7 @@ export default function DWTController(props){
                     });
                     bHasCallback ? callback() : outputResults();
                 };
-                DWObject.Addon.BarcodeReader.decode(props.buffer.current).then(onDbrReadSuccess, onDbrReadFail);
+                DWTObject.Addon.BarcodeReader.decode(props.buffer.current).then(onDbrReadSuccess, onDbrReadFail);
             });
     }
 
@@ -608,8 +608,8 @@ export default function DWTController(props){
                 value:_default
             });
             _type === "camera"
-                ? DWObject.Addon.Webcam.SetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + prop], _default, true)
-                : DWObject.Addon.Webcam.SetVideoPropertySetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + prop], _default, true);
+                ? DWTObject.Addon.Webcam.SetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + prop], _default, true)
+                : DWTObject.Addon.Webcam.SetVideoPropertySetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + prop], _default, true);
             setBShowRangePicker(false);
         } else if (value === "close-picker") {
             setBShowRangePicker(false);
@@ -621,8 +621,8 @@ export default function DWTController(props){
                 value:value
             });
             _type === "camera"
-                ? DWObject.Addon.Webcam.SetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + prop], value, false)
-                : DWObject.Addon.Webcam.SetVideoPropertySetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + prop], value, false);
+                ? DWTObject.Addon.Webcam.SetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + prop], value, false)
+                : DWTObject.Addon.Webcam.SetVideoPropertySetting(Dynamsoft.DWT.EnumDWT_VideoProperty["VP_" + prop], value, false);
         }
     }
     return (

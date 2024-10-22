@@ -5,7 +5,7 @@ const DWTUserInterface = React.lazy(() => import('./dwt/DWTUserInterface'));
 let featureSet = { scan: 0b1, camera: 0b10, load: 0b100, save: 0b1000, upload: 0b10000, barcode: 0b100000, uploader: 0b1000000 };
 let features = 0b1111111;
 let initialStatus = 0;
-let DWObject = null;
+let DWTObject = null;
 let containerId = 'dwtcontrolContainer';
 let width = 585;
 let height = 513;
@@ -81,36 +81,36 @@ export default function DWT(props){
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(
-                    _DWObject => {
-                        DWObject = _DWObject;
-                        if (DWObject.Viewer.bind(document.getElementById(containerId))) {
-							DWObject.Viewer.width = width;
-							DWObject.Viewer.height = height;
-                            DWObject.Viewer.setViewMode(1, 1);
-                            DWObject.Viewer.autoChangeIndex = true;
-                            DWObject.Viewer.show();
+                    _DWTObject => {
+                        DWTObject = _DWTObject;
+                        if (DWTObject.Viewer.bind(document.getElementById(containerId))) {
+							DWTObject.Viewer.width = width;
+							DWTObject.Viewer.height = height;
+                            DWTObject.Viewer.setViewMode(1, 1);
+                            DWTObject.Viewer.autoChangeIndex = true;
+                            DWTObject.Viewer.show();
                             handleStatusChange(1);
-                            setDwt(DWObject)
-                            // DWObject = dwt
-                            if (DWObject) {
+                            setDwt(DWTObject)
+                            // DWTObject = dwt
+                            if (DWTObject) {
                                 /**
                                  * NOTE: RemoveAll doesn't trigger bitmapchanged nor OnTopImageInTheViewChanged!!
                                  */
-                                DWObject.RegisterEvent("OnBitmapChanged", (changedIndex, changeType) => handleBufferChange(changedIndex, changeType));
-                                DWObject.Viewer.on("topPageChanged", (index, bByScrollBar) => { 
-									if (bByScrollBar || DWObject.isUsingActiveX()){
+                                DWTObject.RegisterEvent("OnBitmapChanged", (changedIndex, changeType) => handleBufferChange(changedIndex, changeType));
+                                DWTObject.Viewer.on("topPageChanged", (index, bByScrollBar) => { 
+									if (bByScrollBar || DWTObject.isUsingActiveX()){
 										go(index);
 									}
 								});
-                                DWObject.RegisterEvent("OnPostTransfer", () => handleBufferChange());
-                                DWObject.RegisterEvent("OnPostLoad", () => handleBufferChange());
-                                DWObject.RegisterEvent("OnBufferChanged", (e) => {
+                                DWTObject.RegisterEvent("OnPostTransfer", () => handleBufferChange());
+                                DWTObject.RegisterEvent("OnPostLoad", () => handleBufferChange());
+                                DWTObject.RegisterEvent("OnBufferChanged", (e) => {
                                     if(e.action === 'shift' && e.currentId !==  -1){
                                         handleBufferChange()
                                     }
                                 });
-                                DWObject.RegisterEvent("OnPostAllTransfers", () => DWObject.CloseSource());
-                                DWObject.Viewer.on('pageAreaSelected', (nImageIndex, rect) => {
+                                DWTObject.RegisterEvent("OnPostAllTransfers", () => DWTObject.CloseSource());
+                                DWTObject.Viewer.on('pageAreaSelected', (nImageIndex, rect) => {
                                     if (rect.length > 0) {
 										let currentRect = rect[rect.length - 1];
 										let newZones = [...zones];
@@ -120,12 +120,12 @@ export default function DWT(props){
                                         setZones(newZones)
 									}
                                 });
-                                DWObject.Viewer.on('pageAreaUnselected', () => setZones([]));
-								DWObject.Viewer.on("click", () => { 
+                                DWTObject.Viewer.on('pageAreaUnselected', () => setZones([]));
+								DWTObject.Viewer.on("click", () => { 
 									handleBufferChange();
 								});
                                 if (Dynamsoft.Lib.env.bWin)
-                                    DWObject.MouseShape = false;
+                                    DWTObject.MouseShape = false;
                                 handleBufferChange();
                             }
                         }
@@ -155,7 +155,7 @@ export default function DWT(props){
 				// return;
 			} 
             
-			if (DWObject === null) loadDWT(true)
+			if (DWTObject === null) loadDWT(true)
 		});
     },[]); // eslint-disable-line react-hooks/exhaustive-deps
     
@@ -164,10 +164,10 @@ export default function DWT(props){
         if (buffer.count > 0) {
             setRuntimeInfo({
                 curImageTimeStamp: (new Date()).getTime(),
-                showAbleWidth: (DWObject.HowManyImagesInBuffer > 1 ? width - 12 : width) - 4,
+                showAbleWidth: (DWTObject.HowManyImagesInBuffer > 1 ? width - 12 : width) - 4,
                 showAbleHeight: height - 4,
-                ImageWidth: DWObject.GetImageWidth(buffer.current),
-                ImageHeight: DWObject.GetImageHeight(buffer.current)
+                ImageWidth: DWTObject.GetImageWidth(buffer.current),
+                ImageHeight: DWTObject.GetImageHeight(buffer.current)
             })
         }
     },[buffer,buffer.count])
@@ -182,8 +182,8 @@ export default function DWT(props){
 			};
 			Dynamsoft.DWT.CreateDWTObjectEx(
 				dwtInitialConfig,
-				(_DWObject) => {
-					res(_DWObject);
+				(_DWTObject) => {
+					res(_DWTObject);
 				},
 				(errorString) => {
 					rej(errorString)
@@ -192,7 +192,7 @@ export default function DWT(props){
         });
     }
     const go = (index) => {
-        DWObject.CurrentImageIndexInBuffer = index;
+        DWTObject.CurrentImageIndexInBuffer = index;
         handleBufferChange();
     }
     const handleBufferChange = (changedIndex, changeType) => {
@@ -200,12 +200,12 @@ export default function DWT(props){
         if (changeType === 4) {// Modified
             _updated = true;
         }
-        let selection = DWObject.SelectedImagesIndices;
+        let selection = DWTObject.SelectedImagesIndices;
         setSelected(selection)
         setBuffer({
             updated: _updated,
-            current: DWObject.CurrentImageIndexInBuffer,
-            count: DWObject.HowManyImagesInBuffer
+            current: DWTObject.CurrentImageIndexInBuffer,
+            count: DWTObject.HowManyImagesInBuffer
         })
     }
 

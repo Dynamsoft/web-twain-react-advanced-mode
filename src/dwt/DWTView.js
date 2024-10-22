@@ -15,7 +15,7 @@ import './DWTView.css';
  */
 
  const re = /^\d+$/;
- let DWObject = null;
+ let DWTObject = null;
  let width = "585px"
  let height = "513px";
  let navigatorRight = "60px";
@@ -45,13 +45,13 @@ export default function DWTView(props){
     const prevViewReady = usePrevious(viewReady)
 
     useEffect(() => {
-        DWObject = props.dwt
+        DWTObject = props.dwt
         setViewReady({ viewReady: true })
     },[props.dwt])
     useEffect(() => {
-        if(DWObject !==null && viewReady && !prevViewReady){
-            DWObject.Viewer.width = width;
-            DWObject.Viewer.height = height;
+        if(DWTObject !==null && viewReady && !prevViewReady){
+            DWTObject.Viewer.width = width;
+            DWTObject.Viewer.height = height;
         }
         if(props.barcodeRects.length !== 0){
             !props.bNoNavigating && handlePreviewModeChange("1");
@@ -82,14 +82,14 @@ export default function DWTView(props){
             return;
         }
         switch (event.target.getAttribute("value")) {
-            case "editor": imageEditor = DWObject.Viewer.createImageEditor(); imageEditor.show(); break;
-            case "rotateL": DWObject.RotateLeft(props.buffer.current); break;
-            case "rotateR": DWObject.RotateRight(props.buffer.current); break;
-            case "rotate180": DWObject.Rotate(props.buffer.current, 180, true); break;
-            case "mirror": DWObject.Mirror(props.buffer.current); break;
-            case "flip": DWObject.Flip(props.buffer.current); break;
-            case "removeS": DWObject.RemoveAllSelectedImages(); break;
-            case "removeA": DWObject.RemoveAllImages(); handleNavigation("removeAll"); break;
+            case "editor": imageEditor = DWTObject.Viewer.createImageEditor(); imageEditor.show(); break;
+            case "rotateL": DWTObject.RotateLeft(props.buffer.current); break;
+            case "rotateR": DWTObject.RotateRight(props.buffer.current); break;
+            case "rotate180": DWTObject.Rotate(props.buffer.current, 180, true); break;
+            case "mirror": DWTObject.Mirror(props.buffer.current); break;
+            case "flip": DWTObject.Flip(props.buffer.current); break;
+            case "removeS": DWTObject.RemoveAllSelectedImages(); break;
+            case "removeA": DWTObject.RemoveAllImages(); handleNavigation("removeAll"); break;
             case "changeSize": setBShowChangeSizeUI(!bShowChangeSizeUI); break;
             case "crop": crop(); break;
             case "changeImageSizeOK": changeImageSizeOK(); break;
@@ -110,7 +110,7 @@ export default function DWTView(props){
         setInterpolationMethod(event.target.value)
     }
     const changeImageSizeOK = () => {
-        DWObject.ChangeImageSize(props.buffer.current, newWidth, newHeight, parseInt(InterpolationMethod));
+        DWTObject.ChangeImageSize(props.buffer.current, newWidth, newHeight, parseInt(InterpolationMethod));
         setBShowChangeSizeUI(!bShowChangeSizeUI)
     }
     const crop = () => {
@@ -120,7 +120,7 @@ export default function DWTView(props){
             props.handleOutPutMessage("Please select only one rectangle to crop!", "error");
         } else {
             let _zone = props.zones[0];
-            DWObject.Crop(
+            DWTObject.Crop(
                 props.buffer.current,
                 _zone.x, _zone.y, _zone.x + _zone.width, _zone.y + _zone.height
             );
@@ -131,13 +131,13 @@ export default function DWTView(props){
             default://viewModeChange, removeAll
                 break;
             case "first":
-                DWObject.CurrentImageIndexInBuffer = 0; break;
+                DWTObject.CurrentImageIndexInBuffer = 0; break;
             case "last":
-                DWObject.CurrentImageIndexInBuffer = props.buffer.count - 1; break;
+                DWTObject.CurrentImageIndexInBuffer = props.buffer.count - 1; break;
             case "previous":
-                DWObject.CurrentImageIndexInBuffer = (props.buffer.current > 0) && (props.buffer.current - 1); break;
+                DWTObject.CurrentImageIndexInBuffer = (props.buffer.current > 0) && (props.buffer.current - 1); break;
             case "next":
-                DWObject.CurrentImageIndexInBuffer = (props.buffer.current < props.buffer.count - 1) && (props.buffer.current + 1); break;
+                DWTObject.CurrentImageIndexInBuffer = (props.buffer.current < props.buffer.count - 1) && (props.buffer.current + 1); break;
         }
         props.handleBufferChange();
     }
@@ -160,8 +160,8 @@ export default function DWTView(props){
                 return;
             }
             setPreviewMode(_newMode)
-            DWObject.Viewer.setViewMode(parseInt(_newMode), parseInt(_newMode));
-            DWObject.MouseShape = (parseInt(_newMode) > 1);
+            DWTObject.Viewer.setViewMode(parseInt(_newMode), parseInt(_newMode));
+            DWTObject.MouseShape = (parseInt(_newMode) > 1);
             handleNavigation("viewModeChange");
         }
     }
