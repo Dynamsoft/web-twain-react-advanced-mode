@@ -22,7 +22,7 @@ export default function DWT(props){
     }
 
     const [startTime] = useState((new Date()).getTime());
-    const [unSupportedEnv, setUnSupportedEnv] = useState(false);
+    const [unSupportedEnv] = useState(false);
     const [dwt, setDwt] = useState(null);
     /** status
     * 0:  "Initializing..."
@@ -68,7 +68,7 @@ export default function DWT(props){
     
     const loadDWT = (UseService) => {
         Dynamsoft.OnLicenseError = function (message, errorCode) {
-            if(errorCode == -2808)
+            if(errorCode === -2808)
               message = '<div style="padding:0">Sorry. Your product key has expired. You can purchase a full license at the <a target="_blank" href="https://www.dynamsoft.com/store/dynamic-web-twain/#DynamicWebTWAIN">online store</a>.</div><div style="padding:0">Or, you can try requesting a new product key at <a target="_blank" href="https://www.dynamsoft.com/customer/license/trialLicense?product=dwt&utm_source=in-product">this page</a>.</div><div style="padding:0">If you need any help, please <a target="_blank" href="https://www.dynamsoft.com/company/contact/">contact us</a>.</div>';
               Dynamsoft.DWT.ShowMessage(message, {
               width: 680,
@@ -161,15 +161,17 @@ export default function DWT(props){
     
     // (handleBufferChange) callback
     useEffect(() => {
-        if (buffer.count > 0) {
-            setRuntimeInfo({
-                curImageTimeStamp: (new Date()).getTime(),
-                showAbleWidth: (DWTObject.HowManyImagesInBuffer > 1 ? width - 12 : width) - 4,
-                showAbleHeight: height - 4,
-                ImageWidth: DWTObject.GetImageWidth(buffer.current),
-                ImageHeight: DWTObject.GetImageHeight(buffer.current)
-            })
-        }
+        setTimeout(()=>{
+            if (buffer.count > 0) {
+                setRuntimeInfo({
+                    curImageTimeStamp: (new Date()).getTime(),
+                    showAbleWidth: (DWTObject.HowManyImagesInBuffer > 1 ? width - 12 : width) - 4,
+                    showAbleHeight: height - 4,
+                    ImageWidth: DWTObject.GetImageWidth(buffer.current),
+                    ImageHeight: DWTObject.GetImageHeight(buffer.current)
+                })
+            }
+        }, 1)
     },[buffer,buffer.count])
 
     const innerLoadDWT = (UseService) => {

@@ -77,7 +77,7 @@ export default function DWTUserInterface(props){
         if (results === "clear")
             setBarcodeRects([]);
         else {
-            let _oldBR = [...barcodeRects];
+            let _newBR = [];
             if (results.length > 0) {
                 let zoom;
                 if (props.runtimeInfo.showAbleWidth >= props.runtimeInfo.ImageWidth && props.runtimeInfo.showAbleHeight >= props.runtimeInfo.ImageHeight) {
@@ -100,10 +100,10 @@ export default function DWTUserInterface(props){
                     let height = (bottom - top) * zoom;
                     left = leftBase + left * zoom;
                     top = topBase + top * zoom;
-                    _oldBR.push({ x: left, y: top, w: width, h: height });
+                    _newBR.push({ x: left, y: top, w: width, h: height });
                 }
-                setBarcodeRects(_oldBR)
             }
+            setBarcodeRects(_newBR);
         }
     }
     const handleOutPutMessage = (message, type, bReset, bNoScroll) => {

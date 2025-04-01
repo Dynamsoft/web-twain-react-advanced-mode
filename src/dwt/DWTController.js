@@ -90,6 +90,14 @@ export default function DWTController(props){
     useEffect(() => {
         DWTObject = props.dwt;
         if (DWTObject) {
+
+            DWTObject.Viewer.on("wheel", ()=>{
+                props.handleBarcodeResults("clear");
+            });
+            DWTObject.Viewer.on("scroll", ()=>{
+                props.handleBarcodeResults("clear");
+            });
+            
             if (props.features & 0b1) {
                 DWTObject.GetDevicesAsync().then((devices)=>{
                     let sourceNames = [];
@@ -220,7 +228,7 @@ export default function DWTController(props){
             }
             return;
         }
-        DWTObject.Addon.Webcam.StopVideo();
+        toggleCameraVideo(false);
         if (DWTObject.Addon.Webcam.SelectSource(value)) {
             let mediaTypes = DWTObject.Addon.Webcam.GetMediaType(),
                 _mediaTypes = [],
@@ -295,6 +303,9 @@ export default function DWTController(props){
     const toggleCameraVideo = (bShow) => {
         if (DWTObject) {
             if (bShow) {
+                // clear barcode rects
+                props.handleBarcodeResults("clear");
+                
                 playVideo();
                 setDeviceSetup(deviceSetup => {
                     let newDeviceSetup = {...deviceSetup};
@@ -505,9 +516,15 @@ export default function DWTController(props){
             }, (ex) => props.handleException({ code: -6, message: 'Initializing Barcode Reader failed: ' + (ex.message || ex) }));
     }
     const readBarcode = () => {
+        
+        // close video
+        toggleCameraVideo(false);
+            
         Dynamsoft.Lib.showMask();
+        props.handleBarcodeResults("clear");
         setReadingBarcode(true);
         props.handleNavigating(false);
+        DWTObject.Viewer.gotoPage(DWTObject.CurrentImageIndexInBuffer);
         DWTObject.Addon.BarcodeReader.getRuntimeSettings()
             .then(settings => {
                 if (DWTObject.GetImageBitDepth(props.buffer.current) === 1)
@@ -787,7 +804,7 @@ export default function DWTController(props){
                             <div className="divTableStyle" style={shownTabs & 16 ? { display: "block" } : { display: "none" }}>
                                 <ul>
                                     <li className="tc">
-                                        {(bWin && (props.features & 0b100000)) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p" : "majorButton enabled width_48p"} disabled={props.buffer.count === 0 || readingBarcode ? "disabled" : ""} onClick={() => readBarcode()} >{readingBarcode ? "Reading..." : "Read Barcode"}</button> : ""}
+                                        {(props.features & 0b100000) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p" : "majorButton enabled width_48p"} disabled={props.buffer.count === 0 || readingBarcode ? "disabled" : ""} onClick={() => { readBarcode() } } >{readingBarcode ? "Reading..." : "Read Barcode"}</button> : ""}
                                     </li>
                                     {props.barcodeRects.length > 0 &&
                                         (<li><button tabIndex="5" className="majorButton enabled fullWidth" onClick={() => props.handleBarcodeResults("clear")}>Clear Barcode Rects</button></li>)

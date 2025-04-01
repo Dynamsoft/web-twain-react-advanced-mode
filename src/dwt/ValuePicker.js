@@ -33,7 +33,7 @@ export default function ValuePicker(props) {
         let _valuePacks = props.valuePacks;
         if(currentValues.length === 0 || props.targetObject !== prevTargetObject){
             for(let i = 0; i < _valuePacks.length; i++) {
-                if (_valuePacks[i].name === props.current) {
+                if (_valuePacks[i].name === current) {
                     setCurrentValues(_valuePacks[i].items)
                     return;
                 }
@@ -53,7 +53,7 @@ export default function ValuePicker(props) {
         for (let i = 0; i < props.valuePacks.length; i++) {
             if (props.valuePacks[i].name === packName) {
                 setCurrentValues(props.valuePacks[i].items);
-                setCurrent(packName)
+                setCurrent(packName);
                 break;
             }
         }
