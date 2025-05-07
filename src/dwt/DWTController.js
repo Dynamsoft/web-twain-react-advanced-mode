@@ -91,6 +91,16 @@ export default function DWTController(props){
         DWTObject = props.dwt;
         if (DWTObject) {
 
+            // from v19.0
+            DWTObject.Addon.PDF.SetReaderOptions({
+                convertMode: Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL,
+                renderOptions: {
+                    renderAnnotations: true,
+                    resolution: 200
+                },
+                preserveUnmodifiedOnSave: true
+            });
+
             DWTObject.Viewer.on("wheel", ()=>{
                 props.handleBarcodeResults("clear");
             });
@@ -313,12 +323,14 @@ export default function DWTController(props){
                     return newDeviceSetup
                 })
             } else {
-                DWTObject.Addon.Webcam.StopVideo();
-                setDeviceSetup(deviceSetup => {
-                    let newDeviceSetup = {...deviceSetup};
-                    newDeviceSetup.isVideoOn = false;
-                    return newDeviceSetup
-                })
+                if(deviceSetup.isVideoOn) {
+                    DWTObject.Addon.Webcam.StopVideo();
+                    setDeviceSetup(deviceSetup => {
+                        let newDeviceSetup = {...deviceSetup};
+                        newDeviceSetup.isVideoOn = false;
+                        return newDeviceSetup
+                    })
+                }
             }
         }
     }
@@ -380,12 +392,6 @@ export default function DWTController(props){
     // Tab 3: Load
     const loadImagesOrPDFs = () => {
         DWTObject.IfShowFileDialog = true;
-        DWTObject.Addon.PDF.SetReaderOptions({
-            convertMode: Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL,
-            renderOptions: {
-                resolution: 200
-            }
-        });
         DWTObject.LoadImageEx("", 5 /*this.Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL*/, () => {
             props.handleOutPutMessage("Loaded an image successfully.");
         }, (errorCode, errorString) => props.handleException({ code: errorCode, message: errorString }));
@@ -516,7 +522,13 @@ export default function DWTController(props){
             }, (ex) => props.handleException({ code: -6, message: 'Initializing Barcode Reader failed: ' + (ex.message || ex) }));
     }
     const readBarcode = () => {
-        
+
+        let previewModeEl = document.querySelector('.previewMode');
+        if (previewModeEl && previewModeEl.value !== "1") {
+            props.handleOutPutMessage("Cannot read barcode in this view mode. Please switch to 1x1 view mode.", "error");
+            return;
+        }
+
         // close video
         toggleCameraVideo(false);
             
