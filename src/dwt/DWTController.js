@@ -29,6 +29,8 @@ import RangePicker from './RangePicker';
  let fileUploaderManager = null;
  let dbrResults = [];
 
+ let strMediaType, strResolution, frameRate;
+
 export default function DWTController(props){
 
     if (props.features & 7 === 0) {
@@ -144,6 +146,7 @@ export default function DWTController(props){
                     }
                 });
             }
+
         }
     },[props.dwt]) // eslint-disable-line react-hooks/exhaustive-deps
     
@@ -254,6 +257,11 @@ export default function DWTController(props){
             mediaTypes = mediaTypes._resultlist;
             frameRates = frameRates._resultlist;
             resolutions = resolutions._resultlist;
+            
+            strMediaType = _currentmT;
+            strResolution = _currentRes;
+            frameRate = _currentfR;
+
             for (let i = 0; i < mediaTypes.length - 1; i++) {
                 mediaTypes[i] === _currentmT
                     ? _mediaTypes[i] = { value: mediaTypes[i].toString(), checked: true }
@@ -368,12 +376,19 @@ export default function DWTController(props){
                 });
                 return;
             } else {
-                //this.DWTObject.Addon.Webcam.StopVideo();
+
+                let bChanged = false;
                 switch (config.prop) {
-                    case "Frame Rate": DWTObject.Addon.Webcam.SetFrameRate(config.value); break;
-                    case "Media Type": DWTObject.Addon.Webcam.SetMediaType(config.value); break;
-                    case "Resolution": DWTObject.Addon.Webcam.SetResolution(config.value); break;
+                    case "Frame Rate": if(frameRate != parseInt(config.value)) { frameRate = parseInt(config.value); bChanged = true; } break;
+                    case "Media Type": if(strMediaType != config.value) { strMediaType = config.value; bChanged = true;  } break;
+                    case "Resolution": if(strResolution != config.value) { strResolution = config.value; bChanged = true;  } break;
                     default: break;
+                }
+
+                if(bChanged) {
+                    DWTObject.Addon.Webcam.SetMediaType(strMediaType);
+                    DWTObject.Addon.Webcam.SetResolution(strResolution);
+                    DWTObject.Addon.Webcam.SetFrameRate(frameRate);
                 }
             }
         }
