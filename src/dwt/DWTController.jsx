@@ -1,7 +1,7 @@
-import React , {useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DWTController.css';
-import ValuePicker from './ValuePicker';
-import RangePicker from './RangePicker';
+import ValuePicker from './ValuePicker.jsx';
+import RangePicker from './RangePicker.jsx';
 /**
  * @props
  * @prop {object} Dynamsoft a namespace
@@ -19,19 +19,19 @@ import RangePicker from './RangePicker';
  * @prop {function} handleException a function to handle exceptions
  */
 
- let initialShownTabs = 127;
- let cameraReady = false;
- let barcodeReady = false;
- let fileUploaderReady = false;
- let Dynamsoft = null;
- let DWTObject = null;
+let initialShownTabs = 127;
+let cameraReady = false;
+let barcodeReady = false;
+let fileUploaderReady = false;
+let Dynamsoft = null;
+let DWTObject = null;
 //  let dbrObject = null;
- let fileUploaderManager = null;
- let dbrResults = [];
+let fileUploaderManager = null;
+let dbrResults = [];
 
- let strMediaType, strResolution, frameRate;
+let strMediaType, strResolution, frameRate;
 
-export default function DWTController(props){
+export default function DWTController(props) {
 
     if (props.features & 7 === 0) {
         initialShownTabs = props.features;
@@ -39,14 +39,14 @@ export default function DWTController(props){
         initialShownTabs = props.features & 1 || props.features & 2 || props.features & 4;
         if (props.features & 24) {
             initialShownTabs += 8;
-        } else if (props.features & 96){
+        } else if (props.features & 96) {
             initialShownTabs += 16;
         }
     }
     Dynamsoft = props.Dynamsoft
     const [shownTabs, setShownTabs] = useState(initialShownTabs);
     const [scanners, setScanners] = useState([]);
-    const [deviceSetup, setDeviceSetup ] = useState({
+    const [deviceSetup, setDeviceSetup] = useState({
         currentScanner: "Looking for devices..",
         currentCamera: "Looking for devices..",
         bShowUI: false,
@@ -103,15 +103,15 @@ export default function DWTController(props){
                 preserveUnmodifiedOnSave: true
             });
 
-            DWTObject.Viewer.on("wheel", ()=>{
+            DWTObject.Viewer.on("wheel", () => {
                 props.handleBarcodeResults("clear");
             });
-            DWTObject.Viewer.on("scroll", ()=>{
+            DWTObject.Viewer.on("scroll", () => {
                 props.handleBarcodeResults("clear");
             });
-            
+
             if (props.features & 0b1) {
-                DWTObject.GetDevicesAsync().then((devices)=>{
+                DWTObject.GetDevicesAsync().then((devices) => {
                     let sourceNames = [];
                     for (var i = 0; i < devices.length; i++) { // Get how many sources are installed in the system
                         sourceNames.push(devices[i].displayName);
@@ -148,17 +148,17 @@ export default function DWTController(props){
             }
 
         }
-    },[props.dwt]) // eslint-disable-line react-hooks/exhaustive-deps
-    
+    }, [props.dwt]) // eslint-disable-line react-hooks/exhaustive-deps
+
     // Tab 1: Scanner
     const onSourceChange = (value) => {
-        setDeviceSetup({...deviceSetup,currentScanner:value})
+        setDeviceSetup({ ...deviceSetup, currentScanner: value })
         if (value === "noscanner") return;
         if (Dynamsoft.Lib.env.bMac) {
             if (value.indexOf("ICA") === 0) {
-                setDeviceSetup({...deviceSetup,noUI:true})
+                setDeviceSetup({ ...deviceSetup, noUI: true })
             } else {
-                setDeviceSetup({...deviceSetup,noUI:false})
+                setDeviceSetup({ ...deviceSetup, noUI: false })
             }
         }
     }
@@ -174,8 +174,8 @@ export default function DWTController(props){
         }
     }
     const onScannerSetupChange = (option, value) => {
-        setDeviceSetup( deviceSetup => {
-            let newDeviceSetup = {...deviceSetup};
+        setDeviceSetup(deviceSetup => {
+            let newDeviceSetup = { ...deviceSetup };
             switch (option) {
                 case "bShowUI":
                     newDeviceSetup.bShowUI = value;
@@ -221,7 +221,7 @@ export default function DWTController(props){
                  * NOTE: No errors are being logged!!
                  */
             });
-        }).then(()=>{
+        }).then(() => {
             props.handleOutPutMessage("Acquire success!", "important")
         }).catch(function (exp) {
             props.handleOutPutMessage("Acquire failure!", "error")
@@ -230,7 +230,7 @@ export default function DWTController(props){
     // Tab 2: Camera    
     const onCameraChange = (value) => {
         setDeviceSetup(deviceSetup => {
-            let newDeviceSetup = {...deviceSetup};
+            let newDeviceSetup = { ...deviceSetup };
             newDeviceSetup.currentCamera = value;
             return newDeviceSetup
         })
@@ -257,7 +257,7 @@ export default function DWTController(props){
             mediaTypes = mediaTypes._resultlist;
             frameRates = frameRates._resultlist;
             resolutions = resolutions._resultlist;
-            
+
             strMediaType = _currentmT;
             strResolution = _currentRes;
             frameRate = _currentfR;
@@ -280,21 +280,21 @@ export default function DWTController(props){
             _advancedSettings = Object.keys(Dynamsoft.DWT.EnumDWT_VideoProperty).map((_value) => { return { value: _value.substr(3) } });
             _advancedCameraSettings = Object.keys(Dynamsoft.DWT.EnumDWT_CameraControlProperty).map((_value) => { return { value: _value.substr(4) } });
             setCameraSettings([{
-                    name: "Media Type",
-                    items: _mediaTypes
-                }, {
-                    name: "Frame Rate",
-                    items: _frameRates
-                }, {
-                    name: "Resolution",
-                    items: _resolutions
-                }, {
-                    name: "Video Setup",
-                    items: _advancedSettings
-                }, {
-                    name: "Camera Setup",
-                    items: _advancedCameraSettings
-                }
+                name: "Media Type",
+                items: _mediaTypes
+            }, {
+                name: "Frame Rate",
+                items: _frameRates
+            }, {
+                name: "Resolution",
+                items: _resolutions
+            }, {
+                name: "Video Setup",
+                items: _advancedSettings
+            }, {
+                name: "Camera Setup",
+                items: _advancedCameraSettings
+            }
             ]);
             if (!cameraReady) {
                 cameraReady = true;
@@ -323,18 +323,18 @@ export default function DWTController(props){
             if (bShow) {
                 // clear barcode rects
                 props.handleBarcodeResults("clear");
-                
+
                 playVideo();
                 setDeviceSetup(deviceSetup => {
-                    let newDeviceSetup = {...deviceSetup};
+                    let newDeviceSetup = { ...deviceSetup };
                     newDeviceSetup.isVideoOn = true;
                     return newDeviceSetup
                 })
             } else {
-                if(deviceSetup.isVideoOn) {
+                if (deviceSetup.isVideoOn) {
                     DWTObject.Addon.Webcam.StopVideo();
                     setDeviceSetup(deviceSetup => {
-                        let newDeviceSetup = {...deviceSetup};
+                        let newDeviceSetup = { ...deviceSetup };
                         newDeviceSetup.isVideoOn = false;
                         return newDeviceSetup
                     })
@@ -379,13 +379,13 @@ export default function DWTController(props){
 
                 let bChanged = false;
                 switch (config.prop) {
-                    case "Frame Rate": if(frameRate != parseInt(config.value)) { frameRate = parseInt(config.value); bChanged = true; } break;
-                    case "Media Type": if(strMediaType != config.value) { strMediaType = config.value; bChanged = true;  } break;
-                    case "Resolution": if(strResolution != config.value) { strResolution = config.value; bChanged = true;  } break;
+                    case "Frame Rate": if (frameRate != parseInt(config.value)) { frameRate = parseInt(config.value); bChanged = true; } break;
+                    case "Media Type": if (strMediaType != config.value) { strMediaType = config.value; bChanged = true; } break;
+                    case "Resolution": if (strResolution != config.value) { strResolution = config.value; bChanged = true; } break;
                     default: break;
                 }
 
-                if(bChanged) {
+                if (bChanged) {
                     DWTObject.Addon.Webcam.SetMediaType(strMediaType);
                     DWTObject.Addon.Webcam.SetResolution(strResolution);
                     DWTObject.Addon.Webcam.SetFrameRate(frameRate);
@@ -422,14 +422,14 @@ export default function DWTController(props){
             case "multiPage":
                 setBMulti(event.target.checked); break;
             case "tif":
-            case "pdf":{
+            case "pdf": {
                 setSaveFileFormat(event.target.value);
                 setBMulti(true);
                 break;
             }
             case "bmp":
             case "jpg":
-            case "png":{
+            case "png": {
                 setSaveFileFormat(event.target.value);
                 setBMulti(false);
                 break;
@@ -546,7 +546,7 @@ export default function DWTController(props){
 
         // close video
         toggleCameraVideo(false);
-            
+
         Dynamsoft.Lib.showMask();
         props.handleBarcodeResults("clear");
         setReadingBarcode(true);
@@ -649,7 +649,7 @@ export default function DWTController(props){
             let _default = event.target.getAttribute("_default");
             setRangePicker({
                 ...rangePicker,
-                value:_default
+                value: _default
             });
             _type === "camera"
                 ? DWTObject.Addon.Webcam.SetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + prop], _default, true)
@@ -662,7 +662,7 @@ export default function DWTController(props){
             let prop = event.target.getAttribute("prop");
             setRangePicker({
                 ...rangePicker,
-                value:value
+                value: value
             });
             _type === "camera"
                 ? DWTObject.Addon.Webcam.SetCameraControlPropertySetting(Dynamsoft.DWT.EnumDWT_CameraControlProperty["CCP_" + prop], value, false)
@@ -674,10 +674,10 @@ export default function DWTController(props){
             <div className="divinput">
                 <ul className="PCollapse">
                     {props.features & 0b1 ? (
-                        <li> 
+                        <li>
                             <div className="divType" tabIndex="1" controlindex="1" onKeyUp={(event) => handleTabs(event)} onClick={(event) => handleTabs(event)}>
                                 <div className={shownTabs & 1 ? "mark_arrow expanded" : "mark_arrow collapsed"} ></div>
-                                Custom Scan</div> 
+                                Custom Scan</div>
                             <div className="divTableStyle" style={shownTabs & 1 ? { display: "block" } : { display: "none" }}>
                                 <ul>
                                     <li>
@@ -831,7 +831,7 @@ export default function DWTController(props){
                             <div className="divTableStyle" style={shownTabs & 16 ? { display: "block" } : { display: "none" }}>
                                 <ul>
                                     <li className="tc">
-                                        {(props.features & 0b100000) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p" : "majorButton enabled width_48p"} disabled={props.buffer.count === 0 || readingBarcode ? "disabled" : ""} onClick={() => { readBarcode() } } >{readingBarcode ? "Reading..." : "Read Barcode"}</button> : ""}
+                                        {(props.features & 0b100000) ? <button tabIndex="5" className={props.buffer.count === 0 ? "majorButton disabled width_48p" : "majorButton enabled width_48p"} disabled={props.buffer.count === 0 || readingBarcode ? "disabled" : ""} onClick={() => { readBarcode() }} >{readingBarcode ? "Reading..." : "Read Barcode"}</button> : ""}
                                     </li>
                                     {props.barcodeRects.length > 0 &&
                                         (<li><button tabIndex="5" className="majorButton enabled fullWidth" onClick={() => props.handleBarcodeResults("clear")}>Clear Barcode Rects</button></li>)

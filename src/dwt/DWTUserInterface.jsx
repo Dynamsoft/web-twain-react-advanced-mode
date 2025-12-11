@@ -1,8 +1,8 @@
-import React, { Suspense , useEffect, useState , useRef} from 'react';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import './DWTUserInterface.css';
-import DWTOutPut from './DWTOutPut';
-import DWTView from './DWTView';
-const DWTController = React.lazy(() => import('./DWTController'));
+import DWTOutPut from './DWTOutPut.jsx';
+import DWTView from './DWTView.jsx';
+const DWTController = React.lazy(() => import('./DWTController.jsx'));
 
 /**
  * @props
@@ -18,9 +18,9 @@ const DWTController = React.lazy(() => import('./DWTController'));
  * @prop {object} runtimeInfo contains runtime information like the width & height of the current image 
  * @prop {function} handleBufferChange a function to call when the buffer may requires updating
  */
-export default function DWTUserInterface(props){
+export default function DWTUserInterface(props) {
 
-    const statusChangeText = (_status,_statusChange) => {   
+    const statusChangeText = (_status, _statusChange) => {
         let text = "Initializing...";
         if (_statusChange) {
             text = [];
@@ -40,11 +40,11 @@ export default function DWTUserInterface(props){
         }
         return text;
     }
-    
+
     const [messages, setMessages] = useState([{
-        time:(new Date()).getTime(),
-        text:statusChangeText(props.status),
-        type:"info"
+        time: (new Date()).getTime(),
+        text: statusChangeText(props.status),
+        type: "info"
     }]);
     const [bNoScroll, setBNoScroll] = useState(false);
     const [bNoNavigating, setBNoNavigating] = useState(false);
@@ -54,7 +54,7 @@ export default function DWTUserInterface(props){
     const overMount = useRef(false)
 
     useEffect(() => {
-        if(!overMount.current){
+        if (!overMount.current) {
             overMount.current = true;
             return;
         }
@@ -116,15 +116,15 @@ export default function DWTUserInterface(props){
         } else {
             if (bNoScroll)
                 _noScroll = true;
-            if (bReset){
+            if (bReset) {
                 setMessages([{
                     time: (new Date()).getTime(),
                     text: statusChangeText(props.status),
                     type: "info"
                 }]);
                 setBNoScroll(false);
-            }else{
-                setMessages( messages =>{
+            } else {
+                setMessages(messages => {
                     let newMessages = [...messages];
                     newMessages.push({ time: (new Date()).getTime(), text: message, type: _type });
                     return newMessages;
@@ -146,59 +146,59 @@ export default function DWTUserInterface(props){
             case "delete": handleOutPutMessage("", "", true); break;
         }
     }
-    return(
+    return (
         <div id="DWTcontainer" className="container">
-                <div style={{ textAlign: "left", position: "relative", float: "left", width: "980px" }} className="fullWidth clearfix">
-                    <DWTView
-                        blocks={0b11} /** 1: navigate 2: quick edit */
+            <div style={{ textAlign: "left", position: "relative", float: "left", width: "980px" }} className="fullWidth clearfix">
+                <DWTView
+                    blocks={0b11} /** 1: navigate 2: quick edit */
+                    dwt={props.dwt}
+                    buffer={props.buffer}
+                    zones={props.zones}
+                    containerId={props.containerId}
+                    runtimeInfo={props.runtimeInfo}
+                    bNoNavigating={bNoNavigating}
+                    barcodeRects={barcodeRects}
+                    handleViewerSizeChange={(viewSize) => props.handleViewerSizeChange(viewSize)}
+                    handleBufferChange={() => props.handleBufferChange()}
+                    handleOutPutMessage={(message, type, bReset, bNoScroll) => handleOutPutMessage(message, type, bReset, bNoScroll)}
+                />
+                <Suspense>
+                    <DWTController
+                        Dynamsoft={props.Dynamsoft}
+                        startTime={props.startTime}
+                        features={props.features}
                         dwt={props.dwt}
                         buffer={props.buffer}
+                        selected={props.selected}
                         zones={props.zones}
-                        containerId={props.containerId}
                         runtimeInfo={props.runtimeInfo}
-                        bNoNavigating={bNoNavigating}
                         barcodeRects={barcodeRects}
-                        handleViewerSizeChange={(viewSize) => props.handleViewerSizeChange(viewSize)}
-                        handleBufferChange={() => props.handleBufferChange()}
+                        handleStatusChange={(value) => props.handleStatusChange(value)}
+                        handleBarcodeResults={(results) => handleBarcodeResults(results)}
+                        handleNavigating={(bAllow) => handleNavigating(bAllow)}
+                        handleException={(ex) => handleException(ex)}
                         handleOutPutMessage={(message, type, bReset, bNoScroll) => handleOutPutMessage(message, type, bReset, bNoScroll)}
                     />
-                    <Suspense>
-                        <DWTController
-                            Dynamsoft={props.Dynamsoft}
-                            startTime={props.startTime}
-                            features={props.features}
-                            dwt={props.dwt}
-                            buffer={props.buffer}
-                            selected={props.selected}
-                            zones={props.zones}
-                            runtimeInfo={props.runtimeInfo}
-                            barcodeRects={barcodeRects}
-                            handleStatusChange={(value) => props.handleStatusChange(value)}
-                            handleBarcodeResults={(results) => handleBarcodeResults(results)}
-                            handleNavigating={(bAllow) => handleNavigating(bAllow)}
-                            handleException={(ex) => handleException(ex)}
-                            handleOutPutMessage={(message, type, bReset, bNoScroll) => handleOutPutMessage(message, type, bReset, bNoScroll)}
-                        />
-                    </Suspense>
-                </div>
-                <div style={{ textAlign: "left", position: "relative", float: "left", width: "980px" }} className="fullWidth clearfix">
-                    <DWTOutPut
-                        note={"(Double click or hit 'delete' to clear!)"}
-                        handleEvent={(evt) => handleEvent(evt)}
-                        messages={messages}
-                        bNoScroll={bNoScroll}
-                    />
-                </div>
-            </div >
+                </Suspense>
+            </div>
+            <div style={{ textAlign: "left", position: "relative", float: "left", width: "980px" }} className="fullWidth clearfix">
+                <DWTOutPut
+                    note={"(Double click or hit 'delete' to clear!)"}
+                    handleEvent={(evt) => handleEvent(evt)}
+                    messages={messages}
+                    bNoScroll={bNoScroll}
+                />
+            </div>
+        </div >
     )
 }
 
-function usePrevious(value){
+function usePrevious(value) {
     const ref = useRef();
 
     useEffect(() => {
         ref.current = value;
-    },[value]);
-    
+    }, [value]);
+
     return ref.current;
 }

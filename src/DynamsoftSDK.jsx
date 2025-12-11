@@ -1,6 +1,6 @@
-import React, { Suspense , useEffect, useState} from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Dynamsoft from 'dwt';
-const DWTUserInterface = React.lazy(() => import('./dwt/DWTUserInterface'));
+const DWTUserInterface = React.lazy(() => import('./dwt/DWTUserInterface.jsx'));
 
 let featureSet = { scan: 0b1, camera: 0b10, load: 0b100, save: 0b1000, upload: 0b10000, barcode: 0b100000, uploader: 0b1000000 };
 let features = 0b1111111;
@@ -10,9 +10,9 @@ let containerId = 'dwtcontrolContainer';
 let width = 585;
 let height = 513;
 
-export default function DWT(props){
+export default function DWT(props) {
 
-    if(props.features){
+    if (props.features) {
         features = 0;
         props.features.map((value) => {
             if (featureSet[value]) features += featureSet[value];
@@ -65,27 +65,28 @@ export default function DWT(props){
         let _OnWebTWAINDllDownloadFailure = Dynamsoft.OnWebTWAINDllDownloadFailure;
         Dynamsoft.OnWebTWAINDllDownloadFailure = (...args) => _OnWebTWAINDllDownloadFailure.call({ Dynamsoft: Dynamsoft }, ...args);
     }
-    
+
     const loadDWT = (UseService) => {
         Dynamsoft.OnLicenseError = function (message, errorCode) {
-            if(errorCode === -2808)
-              message = '<div style="padding:0">Sorry. Your product key has expired. You can purchase a full license at the <a target="_blank" href="https://www.dynamsoft.com/store/dynamic-web-twain/#DynamicWebTWAIN">online store</a>.</div><div style="padding:0">Or, you can try requesting a new product key at <a target="_blank" href="https://www.dynamsoft.com/customer/license/trialLicense?product=dwt&utm_source=in-product">this page</a>.</div><div style="padding:0">If you need any help, please <a target="_blank" href="https://www.dynamsoft.com/company/contact/">contact us</a>.</div>';
-              Dynamsoft.DWT.ShowMessage(message, {
-              width: 680,
-              headerStyle: 2
+            if (errorCode === -2808)
+                message = '<div style="padding:0">Sorry. Your product key has expired. You can purchase a full license at the <a target="_blank" href="https://www.dynamsoft.com/store/dynamic-web-twain/#DynamicWebTWAIN">online store</a>.</div><div style="padding:0">Or, you can try requesting a new product key at <a target="_blank" href="https://www.dynamsoft.com/customer/license/trialLicense?product=dwt&utm_source=in-product">this page</a>.</div><div style="padding:0">If you need any help, please <a target="_blank" href="https://www.dynamsoft.com/company/contact/">contact us</a>.</div>';
+            Dynamsoft.DWT.ShowMessage(message, {
+                width: 680,
+                headerStyle: 2
             });
-         };
-		Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
+        };
+        Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: 270, Height: 350 }];
         Dynamsoft.DWT.ResourcesPath = "/dwt-resources";
-		Dynamsoft.DWT.ProductKey = 'DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9';
+        Dynamsoft.DWT.ProductKey = 'DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9';
+ 
         let innerLoad = (UseService) => {
             innerLoadDWT(UseService)
                 .then(
                     _DWTObject => {
                         DWTObject = _DWTObject;
                         if (DWTObject.Viewer.bind(document.getElementById(containerId))) {
-							DWTObject.Viewer.width = width;
-							DWTObject.Viewer.height = height;
+                            DWTObject.Viewer.width = width;
+                            DWTObject.Viewer.height = height;
                             DWTObject.Viewer.setViewMode(1, 1);
                             DWTObject.Viewer.autoChangeIndex = true;
                             DWTObject.Viewer.show();
@@ -97,33 +98,33 @@ export default function DWT(props){
                                  * NOTE: RemoveAll doesn't trigger bitmapchanged nor OnTopImageInTheViewChanged!!
                                  */
                                 DWTObject.RegisterEvent("OnBitmapChanged", (changedIndex, changeType) => handleBufferChange(changedIndex, changeType));
-                                DWTObject.Viewer.on("topPageChanged", (index, bByScrollBar) => { 
-									if (bByScrollBar || DWTObject.isUsingActiveX()){
-										go(index);
-									}
-								});
+                                DWTObject.Viewer.on("topPageChanged", (index, bByScrollBar) => {
+                                    if (bByScrollBar || DWTObject.isUsingActiveX()) {
+                                        go(index);
+                                    }
+                                });
                                 DWTObject.RegisterEvent("OnPostTransfer", () => handleBufferChange());
                                 DWTObject.RegisterEvent("OnPostLoad", () => handleBufferChange());
                                 DWTObject.RegisterEvent("OnBufferChanged", (e) => {
-                                    if(e.action === 'shift' && e.currentId !==  -1){
+                                    if (e.action === 'shift' && e.currentId !== -1) {
                                         handleBufferChange()
                                     }
                                 });
                                 DWTObject.RegisterEvent("OnPostAllTransfers", () => DWTObject.CloseSource());
                                 DWTObject.Viewer.on('pageAreaSelected', (nImageIndex, rect) => {
                                     if (rect.length > 0) {
-										let currentRect = rect[rect.length - 1];
-										let newZones = [...zones];
-										if(rect.length === 1)
-											newZones = [];
-										newZones.push({ x: currentRect.x, y: currentRect.y, width: currentRect.width, height: currentRect.height });
+                                        let currentRect = rect[rect.length - 1];
+                                        let newZones = [...zones];
+                                        if (rect.length === 1)
+                                            newZones = [];
+                                        newZones.push({ x: currentRect.x, y: currentRect.y, width: currentRect.width, height: currentRect.height });
                                         setZones(newZones)
-									}
+                                    }
                                 });
                                 DWTObject.Viewer.on('pageAreaUnselected', () => setZones([]));
-								DWTObject.Viewer.on("click", () => { 
-									handleBufferChange();
-								});
+                                DWTObject.Viewer.on("click", () => {
+                                    handleBufferChange();
+                                });
                                 if (Dynamsoft.Lib.env.bWin)
                                     DWTObject.MouseShape = false;
                                 handleBufferChange();
@@ -146,22 +147,22 @@ export default function DWT(props){
 
     //hook ----  componentdidmount
     useEffect(() => {
-		Dynamsoft.Ready(function(){
-			if (!Dynamsoft.Lib.env.bWin || !Dynamsoft.Lib.product.bChromeEdition) {
+        Dynamsoft.Ready(function () {
+            if (!Dynamsoft.Lib.env.bWin || !Dynamsoft.Lib.product.bChromeEdition) {
                 featureSet = { scan: 0b1, load: 0b100, save: 0b1000, upload: 0b10000, barcode: 0b100000, uploader: 0b1000000 };
                 features = 0b1111101;
                 initialStatus = 0;
                 // setUnSupportedEnv(true)
-				// return;
-			} 
-            
-			if (DWTObject === null) loadDWT(true)
-		});
-    },[]); // eslint-disable-line react-hooks/exhaustive-deps
-    
+                // return;
+            }
+
+            if (DWTObject === null) loadDWT(true)
+        });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     // (handleBufferChange) callback
     useEffect(() => {
-        setTimeout(()=>{
+        setTimeout(() => {
             if (buffer.count > 0) {
                 setRuntimeInfo({
                     curImageTimeStamp: (new Date()).getTime(),
@@ -172,25 +173,25 @@ export default function DWT(props){
                 })
             }
         }, 1)
-    },[buffer,buffer.count])
+    }, [buffer, buffer.count])
 
     const innerLoadDWT = (UseService) => {
         return new Promise((res, rej) => {
-			if (UseService !== undefined)
-				Dynamsoft.DWT.UseLocalService = UseService;
-			modulizeInstallJS();
-			let dwtInitialConfig = {
-				WebTwainId: "dwtObject"
-			};
-			Dynamsoft.DWT.CreateDWTObjectEx(
-				dwtInitialConfig,
-				(_DWTObject) => {
-					res(_DWTObject);
-				},
-				(errorString) => {
-					rej(errorString)
-				}
-			);
+            if (UseService !== undefined)
+                Dynamsoft.DWT.UseLocalService = UseService;
+            modulizeInstallJS();
+            let dwtInitialConfig = {
+                WebTwainId: "dwtObject"
+            };
+            Dynamsoft.DWT.CreateDWTObjectEx(
+                dwtInitialConfig,
+                (_DWTObject) => {
+                    res(_DWTObject);
+                },
+                (errorString) => {
+                    rej(errorString)
+                }
+            );
         });
     }
     const go = (index) => {
@@ -212,32 +213,32 @@ export default function DWT(props){
     }
 
     const handleStatusChange = (value) => {
-        setStatus(status => { return status + value})
+        setStatus(status => { return status + value })
     }
     const handleViewerSizeChange = (viewSize) => {
         //width = viewSize.width;
         //height = viewSize.height;
     }
-    
-    return(
+
+    return (
         unSupportedEnv ? <div>Please use Chrome, Firefox or Edge on Windows!</div>
-                : <div>
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <DWTUserInterface
-                            Dynamsoft={Dynamsoft}
-                            features={features}
-                            containerId={containerId}
-                            startTime={startTime}
-                            dwt={dwt}
-                            status={status}
-                            buffer={buffer}
-                            selected={selected}
-                            zones={zones}
-                            runtimeInfo={runtimeInfo}
-                            handleViewerSizeChange={(viewSize) => handleViewerSizeChange(viewSize)}
-                            handleStatusChange={(value) => handleStatusChange(value)}
-                            handleBufferChange={() => handleBufferChange()}
-                        /></Suspense>
-                </div>
+            : <div>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <DWTUserInterface
+                        Dynamsoft={Dynamsoft}
+                        features={features}
+                        containerId={containerId}
+                        startTime={startTime}
+                        dwt={dwt}
+                        status={status}
+                        buffer={buffer}
+                        selected={selected}
+                        zones={zones}
+                        runtimeInfo={runtimeInfo}
+                        handleViewerSizeChange={(viewSize) => handleViewerSizeChange(viewSize)}
+                        handleStatusChange={(value) => handleStatusChange(value)}
+                        handleBufferChange={() => handleBufferChange()}
+                    /></Suspense>
+            </div>
     )
 }

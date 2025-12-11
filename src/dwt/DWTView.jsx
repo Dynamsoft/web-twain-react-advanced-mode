@@ -1,4 +1,4 @@
-import React,{useState , useEffect , useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './DWTView.css';
 
 /**
@@ -14,15 +14,15 @@ import './DWTView.css';
  * @prop {function} handleOutPutMessage a function to call a message needs to be printed out
  */
 
- const re = /^\d+$/;
- let DWTObject = null;
- let width = "585px"
- let height = "513px";
- let navigatorRight = "60px";
- let navigatorWidth = "585px";
- let imageEditor;
+const re = /^\d+$/;
+let DWTObject = null;
+let width = "585px"
+let height = "513px";
+let navigatorRight = "60px";
+let navigatorWidth = "585px";
+let imageEditor;
 
-export default function DWTView(props){
+export default function DWTView(props) {
 
     if (props.blocks !== undefined) {
         switch (props.blocks) {
@@ -47,13 +47,13 @@ export default function DWTView(props){
     useEffect(() => {
         DWTObject = props.dwt
         setViewReady({ viewReady: true })
-    },[props.dwt])
+    }, [props.dwt])
     useEffect(() => {
-        if(DWTObject !==null && viewReady && !prevViewReady){
+        if (DWTObject !== null && viewReady && !prevViewReady) {
             DWTObject.Viewer.width = width;
             DWTObject.Viewer.height = height;
         }
-        if(props.barcodeRects.length !== 0){
+        if (props.barcodeRects.length !== 0) {
             !props.bNoNavigating && handlePreviewModeChange("1");
         }
         if (document.getElementById(props.containerId).offsetWidth !== 0) {
@@ -65,10 +65,10 @@ export default function DWTView(props){
     })
     useEffect(() => {
         setNewHeight(props.runtimeInfo.ImageHeight)
-    },[props.runtimeInfo.ImageHeight])
+    }, [props.runtimeInfo.ImageHeight])
     useEffect(() => {
         setNewWidth(props.runtimeInfo.ImageWidth)
-    },[props.runtimeInfo.ImageWidth])
+    }, [props.runtimeInfo.ImageWidth])
 
     // Quick Edit
     const handleQuickEdit = (event) => {
@@ -167,7 +167,6 @@ export default function DWTView(props){
     }
     return (
         <>
-            <div style={{ display: viewReady ? "none" : "block" }} className="DWTcontainerTop"></div>
             <div style={{ display: viewReady ? "block" : "none" }} className="DWTcontainerTop">
                 <div style={(props.blocks & 2 && viewReady) ? { display: "block" } : { display: "none" }} className="divEdit">
                     <ul className="operateGrp" onKeyUp={(event) => handleQuickEdit(event)} onClick={(event) => handleQuickEdit(event)}>
@@ -191,7 +190,7 @@ export default function DWTView(props){
                                 <label>New Width (pixel): <input tabIndex="6" type="text" value={newWidth} className="width_48p floatR" onChange={(event) => handleNewSize(event)} /></label>
                             </li>
                             <li>Interpolation method:
-                        <select tabIndex="6" value={InterpolationMethod} className="width_48p floatR" onChange={(event) => handleInterpolationMethodChange(event)}>
+                                <select tabIndex="6" value={InterpolationMethod} className="width_48p floatR" onChange={(event) => handleInterpolationMethodChange(event)}>
                                     <option value="1">NearestNeighbor</option><option value="2">Bilinear</option><option value="3">Bicubic</option></select>
                             </li>
                             <li style={{ textAlign: "center" }}>
@@ -212,16 +211,16 @@ export default function DWTView(props){
                 <div style={(props.blocks & 1 && viewReady) ? { display: "block", width: navigatorWidth, left: navigatorRight } : { display: "none" }} className="navigatePanel clearfix">
                     <div className="ct-lt fullWidth tc floatL">
                         <button tabIndex="7" value="first" onClick={(event) => handleNavigation(event.target.value)}> |&lt; </button>
-                    &nbsp;
-                    <button tabIndex="7" value="previous" onClick={(event) => handleNavigation(event.target.value)}> &lt; </button>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    <input type="text" value={props.buffer.current > -1 ? props.buffer.current + 1 : ""} readOnly="readonly" />
-                    /
-                    <input type="text" value={props.buffer.count > 0 ? props.buffer.count : ""} readOnly="readonly" />
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    <button tabIndex="7" value="next" onClick={(event) => handleNavigation(event.target.value)}> &gt; </button>
-                    &nbsp;
-                    <button tabIndex="7" value="last" onClick={(event) => handleNavigation(event.target.value)}> &gt;| </button>
+                        &nbsp;
+                        <button tabIndex="7" value="previous" onClick={(event) => handleNavigation(event.target.value)}> &lt; </button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="text" value={props.buffer.current > -1 ? props.buffer.current + 1 : ""} readOnly="readonly" />
+                        /
+                        <input type="text" value={props.buffer.count > 0 ? props.buffer.count : ""} readOnly="readonly" />
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button tabIndex="7" value="next" onClick={(event) => handleNavigation(event.target.value)}> &gt; </button>
+                        &nbsp;
+                        <button tabIndex="7" value="last" onClick={(event) => handleNavigation(event.target.value)}> &gt;| </button>
                         <select tabIndex="7" className="previewMode" value={previewMode} onChange={(event) => handlePreviewModeChange(event)}>
                             <option value="1">1X1</option>
                             <option value="2">2X2</option>
@@ -236,12 +235,12 @@ export default function DWTView(props){
     );
 }
 
-function usePrevious(value){
+function usePrevious(value) {
     const ref = useRef();
 
     useEffect(() => {
         ref.current = value;
-    },[value]);
-    
+    }, [value]);
+
     return ref.current;
 }
