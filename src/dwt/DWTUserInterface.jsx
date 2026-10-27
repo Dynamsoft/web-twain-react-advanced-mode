@@ -112,7 +112,15 @@ export default function DWTUserInterface(props) {
             _type = type;
         if (_type === "httpResponse") {
             let msgWindow = window.open("", "Response from server", "height=500,width=750,top=0,left=0,toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no, status=no");
-            msgWindow.document.writeln(message);
+            if (msgWindow) {
+                msgWindow.document.body.textContent = String(message);
+            } else {
+                setMessages(messages => [...messages, {
+                    time: (new Date()).getTime(),
+                    text: String(message),
+                    type: "info"
+                }]);
+            }
         } else {
             if (bNoScroll)
                 _noScroll = true;

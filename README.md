@@ -45,6 +45,9 @@ Starting from DWT19.3, the project has been migrated from Create React App to Vi
    node server.js
    ```
 
+   Uploaded files are saved in `server/uploaded` with generated filenames; the original client filename is not used as a filesystem path.
+   The upload server uses the callback API of Formidable 3.2.4. Restart `node server.js` after changing the server code.
+
 ## Build
 
 Run `npm run build` to build the project. The build artifacts will be stored in the `build/` directory. 
@@ -52,4 +55,3 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
-

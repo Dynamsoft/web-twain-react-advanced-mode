@@ -5,7 +5,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
     plugins: [react()],
     server: {
-        open: true
+        open: true,
+		watch: {
+            ignored: ['**/server/uploaded/**']
+        }
     },
     build: {
         outDir: 'dist',
